@@ -72,10 +72,7 @@ void start(){
             }
         }
         command.push_back(temp);
-        for (int j = 0; j < command.size(); ++j) {
-            cout<<command[j]<<endl;
-
-        }
+       
         if(command[0]=="basu") {
             if (command[1] == "add") {
                 if (command[2] == "class") {
