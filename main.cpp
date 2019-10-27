@@ -59,7 +59,12 @@ void start(){
         vector <string> command;
         vector <string> sttt;
         string temp;
+        bool cassFound = false;
         string selected;
+        for (int j = 0; j <sttt.size() ; ++j) {
+            sttt[j]="";
+
+        }
         for (char i : receive)
         {
             if (i != ' '){
@@ -72,7 +77,7 @@ void start(){
             }
         }
         command.push_back(temp);
-       
+
         if(command[0]=="basu") {
             if (command[1] == "add") {
                 if (command[2] == "class") {
@@ -80,37 +85,42 @@ void start(){
                         (command[3] == "L4.basu") || (command[3] == "L5.basu")) {
                         classnm.push_back(command[3]);
                         AddClass(command[3]);
+                        continue;
+                    } else {
+                        cout << "wrong file name!!" << endl;
                     }
-                    cout << "wrong file name!!" << endl;
                 }
                 if (command[2] == "student") {
                     float average;
                     unsigned long long int code;
                     Date mmm;
                     string name, days;
-                    cout << "enter your average:";
+                    cout << "enter your average:"<<endl;
                     while (true) {
                         cin >> average;
                         if (average > 20 || average < 0) {
-                            cout << "Wrong input for average!!!";
+                            cout << "Wrong input for average!!!"<<endl;
+                            cout <<"enter your average again:"<<endl;
                             continue;
                         }
                         break;
                     }
-                    cout << "enter your student code:";
+                    cout << "enter your student code:"<<endl;
                     while (true) {
                         cin >> code;
                         if (code < 1000000000 || code >= 10000000000) {
-                            cout << "Wrong input for code!!!";
+                            cout << "Wrong input for code!!!"<<endl;
+                            cout << "enter your student code again:"<<endl;
                             continue;
                         }
                         break;
                     }
-                    cout << "enter your name & familyname:";
-                    getline(cin, name);
-                    cout << "enter your date of birth(with this type(year/month/day)):";
+
+                    cout << "enter your date of birth(with this type(year/month/day)):"<<endl;
                     while (true) {
                         cin >> days;
+                        sttt.clear();
+                        temp = "";
                         for (char i : days) {
                             if (i != '/') {
                                 temp += i;
@@ -120,16 +130,23 @@ void start(){
                             }
                         }
                         sttt.push_back(temp);
-                        if (sttt[1] == "" || sttt[2] == "" || sttt[3] == "") {
-                            cout << "Wrong input for inputing type!!!";
+
+                        if (sttt[0] == "" || sttt[1] == "" || sttt[2] == "") {
+                            cout << "Wrong input for inputing type!!!"<<endl;
+                            cout << "enter your date of birth again(with this type(year/month/day)):"<<endl;
                             continue;
                         }
                         break;
                     }
-                    mmm.Year = (stoi(sttt[1]));
-                    mmm.Month = (stoi(sttt[2]));
-                    mmm.Day = (stoi(sttt[3]));
+                    cout << "enter your name & familyname:"<<endl;
+                    string tmpFname, tmpLname;
+                    cin >> tmpFname >> tmpLname;
+                    name = tmpFname + " " + tmpLname;
+                    mmm.Year = (stoi(sttt[0]));
+                    mmm.Month = (stoi(sttt[1]));
+                    mmm.Day = (stoi(sttt[2]));
                     AddStudent(name, mmm, code, average);
+                    continue;
                 }
             }
             if (command[1] == "remove") {
@@ -137,56 +154,49 @@ void start(){
                     for (int i = 0; i < slct.size(); i++) {
                         if (command[3] == slct[i]) {
                             RemoveClass(command[3]);
+                            cassFound = true;
                         }
                     }
-                    cout << "Wrong input for classname!!!" << endl;
+                    if (!cassFound)  cout << "Wrong input for classname!!!" << endl;
                 } else if (command[2] == "student") {
                     cout << "enter your student code:" << endl;
-                    RemoveStudent(stoi(command[3]));
+                    unsigned long long int acc;
+                    cin>>acc;
+                    RemoveStudent(acc);
                 }
             }
             if (command[1] == "select") {
                 if (command[2] == "class") {
+                    bool classFound = false;
                     for (int i = 0; i < slct.size(); i++) {
                         if (command[3] == slct[i]) {
-                            h--;
+                            h=-1;
                             SelectClass(command[3]);
+                            classFound = true;
                         }
                     }
-                    cout << "Wrong input for classname!!!" << endl;
+                    if (!classFound) cout << "Wrong input for classname!!!" << endl;
                 }
-            } else if (command[2] == "none") {
-                h++;
+            } else if (command.size() > 3 && command[2] == "none") {
+                h=1;
                 cout << "unselected choosen" << endl;//I don't know//
             }
 
             if (command[1] == "search") {
-                string ten;
-                vector<string> sdsd;
-                for (char ss: command[2]) {
-                    if (ss != ' ')
-                        ten += ss;
-                    else {
-                        sdsd.push_back(ten);
-                    }
-                }
-                sdsd.push_back(ten);
-                if (sdsd[1] != "") {
-                    Search(sdsd[0], sdsd[1]);
+                if (command.size() == 4) {
+                    Search(command[2], command[3]);
                 } else {
-                    Search(stoi(sdsd[0]));
+                    Search(stoll(command[2]));
                 }
-                cout << "enter your student code:" << endl;
-                Search(stoi(command[2]));//syntax is correct or not???//
             }
 
             if (command[1] == "show") {
-                if (command[2] == "") {
+                if (command.size() == 2) {
                     if (h < 0) {
                         ShowClass(esm);
                     }
                     ShowAll();    //showing all classes//
-                } else if (command[2] != "") {
+                } else if (command.size() > 2) {
                     ShowClass(command[2]);//showing a particular class//
                 }
             }
@@ -271,30 +281,20 @@ void start(){
             cout<<"thank you for using this programm"<<endl;
             break;
         }
-        else{
-            cout<<"The title is not valid ."<<endl;
+        else if ((command[0]!="none") && (command[0]!="basu")){
+            cout<<"The title is not valid and try again."<<endl;
         }
     }
-    return;
 }
 void SelectClass(string slnm)
 {
-    Class cls;
-    ifstream y;
-    y.open(slnm.c_str(),ios::in);
-    if(!y)
-    {
-        cout<<"there is error!!"<<endl;
-        return;
-    }
-    y>>cls.ClassName;
     int i = 0;
     for(i=0;i<slct.size();i++)
     {
-        if(cls.ClassName==slct[i])
+        if(slnm==slct[i])
         {
             bad=i;
-            esm=cls.ClassName;
+            esm=slct[i];
             break;
         }
     }
@@ -313,6 +313,7 @@ void AddClass(string clname)
         return;
     }
     x>>cl.ClassName;
+
     slct.push_back(cl.ClassName);
     x>>cl.Capacity;
     float sum = 0;
@@ -346,6 +347,7 @@ void AddClass(string clname)
     }
     cl.Average=(sum/cl.Capacity);
     Database.push_back(cl);
+    cout<<"the class was added to database "<<endl;
     return;
 }
 void RemoveClass(string clnm)
@@ -377,11 +379,14 @@ void AddStudent(string nmvfa, Date tt, unsigned long long int id, float av)
     for(char i:nmvfa){
         if(i!=' ')
             nm+=i;
-        else
-            nms.push_back(nm);
+        else { nms.push_back(nm);
+        nm="";
+        }
+
 
     }
     nms.push_back(nm);
+
     st.Firstname=nms[0];
     st.Lastname=nms[1];
     Database[bad].Data.push_back(st);
@@ -392,7 +397,7 @@ void AddStudent(string nmvfa, Date tt, unsigned long long int id, float av)
 }
 void RemoveStudent(unsigned long long int id)
 {
-    if(h>0){
+    if(h>=0){
         cout<<"first you have to choose a class"<<endl;
         return;
     }
@@ -416,10 +421,10 @@ void Search(unsigned long long int id){
     for(int i=0;i<Database.size();i++){
         for(int j=0;j<Database[i].Data.size();j++){
             if(Database[i].Data[j].ID==id){
-                cout<<Database[i].Data[j].ID<<'\t';
                 cout<<Database[i].Data[j].Firstname<<'\t';
                 cout<<Database[i].Data[j].Lastname<<'\t';
-                cout<<Database[i].Data[j].Grade;
+                cout<<Database[i].Data[j].ID<<'\t';
+                cout<<Database[i].Data[j].Grade<<'\t';
                 cout<<Database[i].Data[j].Birthday.Year<<"/";
                 cout<<Database[i].Data[j].Birthday.Month<<"/";
                 cout<<Database[i].Data[j].Birthday.Day<<endl;
@@ -435,10 +440,10 @@ void Search(string name, string fname){
     for(int i=0;i<Database.size();i++){
         for(int j=0;j<Database[i].Data.size();j++){
             if((Database[i].Data[j].Firstname==name)&&(Database[i].Data[j].Lastname==fname)){
-                cout<<Database[i].Data[j].ID<<'\t';
                 cout<<Database[i].Data[j].Firstname<<'\t';
                 cout<<Database[i].Data[j].Lastname<<'\t';
-                cout<<Database[i].Data[j].Grade;
+                cout<<Database[i].Data[j].ID<<'\t';
+                cout<<Database[i].Data[j].Grade<<'\t';
                 cout<<Database[i].Data[j].Birthday.Year<<"/";
                 cout<<Database[i].Data[j].Birthday.Month<<"/";
                 cout<<Database[i].Data[j].Birthday.Day<<endl;
@@ -496,12 +501,10 @@ void ShowAll(){
 }
 void SortByName(){
     for(int i=0;i<Database.size();i++){
-        for(int j=Database[i].Capacity;j>0;j--){
+        for(int j=Database[i].Capacity - 1;j>0;j--){
             for(int k=0;k<j;k++){
                 if((Database[i].Data[k].Firstname)>(Database[i].Data[k+1].Firstname)){
-                    string f=(Database[i].Data[k+1].Firstname);
-                    (Database[i].Data[k+1].Firstname)=(Database[i].Data[k].Firstname);
-                    (Database[i].Data[k].Firstname)=f;
+                    swap(Database[i].Data[k], Database[i].Data[k + 1]);
                 }
 
             }
@@ -513,8 +516,8 @@ void SortByName(){
 }
 void SortByID(){
     for(int i=0;i<Database.size();i++){
-        for(int j=Database[i].Capacity;j>0;j--){
-            for(int k=0;k<j;k++){
+        for(int j=Database[i].Capacity - 1;j>0;j--){
+            for(int k=0;k<j;k++) {
                 if((Database[i].Data[k].ID)>(Database[i].Data[k+1].ID)){
                     unsigned long long int f=(Database[i].Data[k+1].ID);
                     (Database[i].Data[k+1].ID)=(Database[i].Data[k].ID);
@@ -543,7 +546,6 @@ void Save(){
             open<<Database[i].Data[j].Birthday.Month<<"/";
             open<<Database[i].Data[j].Birthday.Day<<endl;
         }
-        open.close();
         open.close();
     }
     return;
